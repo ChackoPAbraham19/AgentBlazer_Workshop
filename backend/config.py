@@ -7,7 +7,6 @@
 
 # --- API Base URLs ---
 GROQ_API_URL    = "https://api.groq.com/openai/v1/chat/completions"
-GEMINI_API_URL  = "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions"
 MISTRAL_API_URL = "https://api.mistral.ai/v1/chat/completions"
 
 # --- Council Models ---

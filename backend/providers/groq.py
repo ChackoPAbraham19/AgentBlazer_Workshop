@@ -49,6 +49,25 @@ def call(model: str, system_prompt: str, user_message: str) -> str:
         )
 
     data = response.json()
+    '''data looks like this:
+  {
+      "choices": [
+          {
+              "message": {
+                  "role": "assistant",
+                  "content": "## Reasoning\nThis is the model's thinking...\n\n## Answer\nThis is the final answer..."
+              },
+              "finish_reason": "stop"
+          }
+      ],
+      "model": "llama-3.3-70b-versatile",
+      "usage": {
+          "prompt_tokens": 120,
+          "completion_tokens": 340,
+          "total_tokens": 460
+      }
+  }
+  We only need data["choices"][0]["message"]["content"] — the actual text.'''
 
     try:
         return data["choices"][0]["message"]["content"]

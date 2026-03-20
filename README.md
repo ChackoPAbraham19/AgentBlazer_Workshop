@@ -1,16 +1,21 @@
-# LLM Council — AgentBlazer Workshop
+# 🤖 LLM Council Workshop
 
-A hands-on workshop application where multiple AI models collaborate to answer a question. Each model reasons independently, critiques the others, and a neutral judge delivers a final verdict.
+> **Multi-model reasoning — step by step**
 
----
+A sophisticated workshop application where multiple AI models collaborate to answer complex questions through a structured 3-stage process: independent reasoning, anonymous peer review, and final synthesis.
 
-## How It Works
+![LLM Council Demo](https://via.placeholder.com/800x400/0A0A0F/00D9FF?text=LLM+Council+Workshop)
 
-| Stage | What Happens |
-|-------|-------------|
-| **1 — Opinions** | LLaMA 70B and Compound Beta each receive your question independently and show their step-by-step reasoning before answering |
-| **2 — Peer Review** | Each model reads the other's response (anonymised) and critiques the reasoning quality |
-| **3 — Verdict** | Mistral Small acts as judge, synthesises the best reasoning, and delivers a final answer |
+## ✨ Features
+
+- **🔄 Multi-Stage Reasoning**: 3-phase collaborative process (Opinions → Review → Verdict)
+- **🎭 Anonymous Peer Review**: Models critique each other without knowing identities
+- **📊 Performance Tracking**: Historical data and win rates for model comparison
+- **🎨 Beautiful UI**: Modern dark theme with smooth animations and gradients
+- **📱 Responsive Design**: Works perfectly on desktop and mobile devices
+- **⚡ Real-time Processing**: Live updates through each reasoning stage
+- **🔧 Multiple AI Providers**: Support for Groq, Mistral, Google Gemini, and xAI Grok
+- **📈 Model Selection**: Choose 2 models from 5 available for each session
 
 ---
 

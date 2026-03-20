@@ -1,8 +1,10 @@
-from . import groq, mistral
+from . import groq, mistral, gemini, grok_xai
 
 PROVIDER_MAP = {
-    "groq":    groq,
-    "mistral": mistral,
+    "groq":     groq,
+    "mistral":  mistral,
+    "gemini":   gemini,
+    "grok":     grok_xai,
 }
 
 
@@ -11,7 +13,7 @@ def call_provider(provider: str, model: str, system_prompt: str, user_message: s
     Route a model call to the correct provider module.
 
     Args:
-        provider:      One of 'groq','mistral'
+        provider:      One of 'groq','mistral','gemini','grok'
         model:         The model string to pass to the provider
         system_prompt: Instruction prompt
         user_message:  Content to respond to

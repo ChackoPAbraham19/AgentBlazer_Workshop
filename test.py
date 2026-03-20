@@ -38,7 +38,7 @@ def test_stage1():
     try:
         r = httpx.post(
             f"{BASE_URL}/stage1",
-            json={"question": TEST_QUESTION},
+            json={"question": TEST_QUESTION, "selected_models": ["llama", "compound"]},
             timeout=30
         )
         assert r.status_code == 200, f"Unexpected status code: {r.status_code}"

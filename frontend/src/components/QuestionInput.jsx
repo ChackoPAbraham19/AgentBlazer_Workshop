@@ -8,7 +8,7 @@ const SAMPLE_QUESTIONS = [
   "What is Big O notation and why does it matter?",
 ];
 
-export default function QuestionInput({ onSubmit }) {
+export default function QuestionInput({ onSubmit, availableModels, selectedModels, onToggleModel }) {
   const [value, setValue] = useState("");
 
   function handleSubmit() {
@@ -36,6 +36,32 @@ export default function QuestionInput({ onSubmit }) {
           rows={4}
           autoFocus
         />
+
+        {availableModels.length > 0 && (
+          <div className="model-selection">
+            <div className="model-selection-header">
+              <span className="model-selection-label">SELECT 2 MODELS TO COMPETE:</span>
+              <span className="model-selection-count">{selectedModels.length}/2 selected</span>
+            </div>
+            <div className="model-grid">
+              {availableModels.map((model) => (
+                <div
+                  key={model.id}
+                  className={`model-card ${selectedModels.includes(model.id) ? 'selected' : ''} ${selectedModels.length >= 2 && !selectedModels.includes(model.id) ? 'disabled' : ''}`}
+                  onClick={() => onToggleModel(model.id)}
+                >
+                  <div className="model-name">{model.name}</div>
+                  <div className="model-provider">{model.provider.toUpperCase()}</div>
+                  <div className="model-stats">
+                    <div className="stat">Sessions: {model.performance.total_sessions}</div>
+                    <div className="stat">Win Rate: {(model.performance.win_rate * 100).toFixed(1)}%</div>
+                    <div className="stat">Avg Rank: {model.performance.avg_ranking.toFixed(1)}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         <div className="question-actions">
           <span className="question-shortcut">Ctrl + Enter to submit</span>

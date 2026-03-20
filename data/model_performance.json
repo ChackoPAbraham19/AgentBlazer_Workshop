@@ -1,0 +1,43 @@
+{
+  "llama": {
+    "name": "LLaMA 3.3 70B",
+    "total_sessions": 8,
+    "total_rankings": [
+      2,
+      2,
+      2,
+      2
+    ],
+    "win_count": 0,
+    "avg_ranking": 2.0,
+    "total_critiques": 0,
+    "critique_scores": [],
+    "last_used": "2026-03-20T04:05:24.433978"
+  },
+  "compound": {
+    "name": "Compound Beta",
+    "total_sessions": 6,
+    "total_rankings": [
+      2,
+      2,
+      2
+    ],
+    "win_count": 0,
+    "avg_ranking": 2.0,
+    "total_critiques": 0,
+    "critique_scores": [],
+    "last_used": "2026-03-20T04:05:24.433981"
+  },
+  "mistral-large": {
+    "name": "Mistral Large",
+    "total_sessions": 2,
+    "total_rankings": [
+      2
+    ],
+    "win_count": 0,
+    "avg_ranking": 2.0,
+    "total_critiques": 0,
+    "critique_scores": [],
+    "last_used": "2026-03-19T19:35:27.309335"
+  }
+}

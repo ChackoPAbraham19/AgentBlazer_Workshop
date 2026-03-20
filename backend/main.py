@@ -59,21 +59,25 @@ SESSIONS_DIR = Path("data/sessions")
 SESSIONS_DIR.mkdir(parents=True, exist_ok=True)
 
 
-# ─────────────────────────────────────────────────────────
-# Request / Response Models
-# ─────────────────────────────────────────────────────────
+class RatingRequest(BaseModel):
+    verdict_rating: int  # 1-5 stars
+    review_ratings: list[int]  # List of 1-5 for each review
+
 
 class Stage1Request(BaseModel):
     question: str
+    selected_models: list[str] = None  # Optional: list of model IDs to use
+
 
 class Stage2Request(BaseModel):
-    question:  str
+    question: str
     responses: list[dict]
 
+
 class Stage3Request(BaseModel):
-    question:  str
+    question: str
     responses: list[dict]
-    reviews:   list[dict]
+    reviews: list[dict]
 
 
 # ─────────────────────────────────────────────────────────
@@ -89,14 +93,44 @@ def health():
         "status": "ok",
         "groq_key_set":    bool(os.getenv("GROQ_API_KEY")),
         "mistral_key_set": bool(os.getenv("MISTRAL_API_KEY")),
+        "gemini_key_set":  bool(os.getenv("GEMINI_API_KEY")),
+        "grok_key_set":    bool(os.getenv("GROK_API_KEY")),
     }
+
+
+@app.get("/models")
+def get_models():
+    """
+    Returns available models with their performance data.
+    """
+    from backend.council import get_model_performance
+    from backend.config import COUNCIL_MODELS
+
+    performance_data = get_model_performance()
+
+    models = []
+    for model in COUNCIL_MODELS:
+        perf = performance_data.get(model["id"], {})
+        models.append({
+            "id": model["id"],
+            "name": model["name"],
+            "provider": model["provider"],
+            "performance": {
+                "total_sessions": perf.get("total_sessions", 0),
+                "avg_ranking": perf.get("avg_ranking", 0),
+                "win_count": perf.get("win_count", 0),
+                "win_rate": perf.get("win_count", 0) / max(perf.get("total_sessions", 0), 1),
+            }
+        })
+
+    return {"models": models}
 
 
 @app.post("/stage1")
 def stage1(request: Stage1Request):
     """
     Stage 1 — Independent Opinions.
-    Each council model receives the question and responds
+    Each selected council model receives the question and responds
     with explicit reasoning followed by a final answer.
     Models are called sequentially.
     """
@@ -104,7 +138,7 @@ def stage1(request: Stage1Request):
         raise HTTPException(status_code=400, detail="Question must not be empty.")
 
     try:
-        responses = run_stage1(request.question)
+        responses = run_stage1(request.question, request.selected_models)
     except RuntimeError as e:
         raise HTTPException(status_code=502, detail=str(e))
 
@@ -145,6 +179,10 @@ def stage3(request: Stage3Request):
     except RuntimeError as e:
         raise HTTPException(status_code=502, detail=str(e))
 
+    # Update model performance based on this session
+    from backend.council import update_model_performance
+    update_model_performance(request.responses, request.reviews)
+
     # Persist the full session
     session = {
         "session_id": str(uuid.uuid4()),
@@ -157,6 +195,7 @@ def stage3(request: Stage3Request):
     _save_session(session)
 
     return {
+        "session_id": session["session_id"],
         "summary": result["summary"],
         "verdict": result["verdict"],
     }
@@ -177,23 +216,32 @@ def list_sessions():
                 "session_id": data.get("session_id"),
                 "timestamp":  data.get("timestamp"),
                 "question":   data.get("question"),
+                "ratings":    data.get("ratings"),
             })
         except Exception:
             continue
     return sessions
 
 
-@app.get("/sessions/{session_id}")
-def get_session(session_id: str):
+@app.post("/rate_session/{session_id}")
+def rate_session(session_id: str, request: RatingRequest):
     """
-    Returns the full content of a saved session by ID.
+    Submit ratings for a session's verdict and reviews.
     """
     for file in SESSIONS_DIR.glob("*.json"):
         try:
             with open(file) as f:
                 data = json.load(f)
             if data.get("session_id") == session_id:
-                return data
+                # Update the session with ratings
+                data["ratings"] = {
+                    "verdict_rating": request.verdict_rating,
+                    "review_ratings": request.review_ratings,
+                    "timestamp": datetime.utcnow().isoformat(),
+                }
+                with open(file, "w") as f:
+                    json.dump(data, f, indent=2)
+                return {"message": "Ratings submitted successfully."}
         except Exception:
             continue
     raise HTTPException(status_code=404, detail=f"Session '{session_id}' not found.")
